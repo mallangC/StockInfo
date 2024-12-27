@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: StockInfo
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    defer-datasource-initialization: true
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:stockInfo
+    username: sa
+    password:
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  jwt:
+    secret: U3RvY2tJbmZv
+
+scheduler:
+  scrap:
+    yahoo: "0 0 0 * * *"
