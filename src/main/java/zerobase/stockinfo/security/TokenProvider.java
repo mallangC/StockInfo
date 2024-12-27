@@ -30,7 +30,7 @@ public class TokenProvider {
 
   @Value("${spring.jwt.secret}")
   private String secretKey;
-  private Key key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+  private final Key key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
 
   public String generateToken(String username, List<String> roles) {
     Claims claims = (Claims) Jwts.claims().subject(username);
