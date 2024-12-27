@@ -70,7 +70,6 @@ public class TokenProvider {
       return Jwts.parser().verifyWith((SecretKey) key).build().parseSignedClaims(token).getPayload();
 
     }catch (ExpiredJwtException e){
-      // TODO
       return e.getClaims();
     }
   }
