@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import zerobase.stockinfo.exception.impl.NoCompanyException;
 import zerobase.stockinfo.model.Company;
 import zerobase.stockinfo.model.ScrapedResult;
 import zerobase.stockinfo.persist.CompanyRepository;
@@ -81,5 +82,15 @@ public class CompanyService {
 
   public void deleteAutocompleteKeyword(String keyword){
     this.trie.remove(keyword);
+  }
+
+  public String deleteCompany(String ticker) {
+    var company = this.companyRepository.findByTicker(ticker)
+            .orElseThrow(NoCompanyException::new);
+      this.dividendRepository.deleteAllByCompanyId(company.getId());
+      this.companyRepository.delete(company);
+      this.deleteAutocompleteKeyword(company.getName());
+
+      return company.getName();
   }
 }

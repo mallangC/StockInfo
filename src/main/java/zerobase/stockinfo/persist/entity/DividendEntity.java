@@ -1,11 +1,11 @@
 package zerobase.stockinfo.persist.entity;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import zerobase.stockinfo.model.Dividend;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity(name = "DIVIDEND")

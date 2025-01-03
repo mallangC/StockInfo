@@ -3,8 +3,7 @@ package zerobase.stockinfo.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,8 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import zerobase.stockinfo.service.MemberService;
 
-import javax.crypto.SecretKey;
-import java.security.Key;
 import java.util.Date;
 import java.util.List;
 
@@ -30,22 +27,22 @@ public class TokenProvider {
 
   @Value("${spring.jwt.secret}")
   private String secretKey;
-  private final Key key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
 
   public String generateToken(String username, List<String> roles) {
-    Claims claims = (Claims) Jwts.claims().subject(username);
+    Claims claims = (Claims) Jwts.claims().setSubject(username);
     claims.put(KEY_ROLES, roles);
 
     var now = new Date();
     var expiredDate = new Date(now.getTime() + TOKEN_EXPIRE_TIME);
 
     return Jwts.builder()
-            .claims(claims)
-            .issuedAt(now)
-            .expiration(expiredDate)
-            .signWith(key)
+            .setClaims(claims)
+            .setIssuedAt(now)
+            .setExpiration(expiredDate)
+            .signWith(SignatureAlgorithm.HS512, this.secretKey)
             .compact();
   }
+
 
   public Authentication getAuthentication(String jwt) {
     UserDetails userDetails = this.memberService.loadUserByUsername(this.getUsername(jwt));
@@ -53,9 +50,11 @@ public class TokenProvider {
     return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
   }
 
+
   public String getUsername(String token) {
     return this.parseClaims(token).getSubject();
   }
+
 
   public boolean validateToken(String token) {
     if (!StringUtils.hasText(token)) return false;
@@ -64,14 +63,12 @@ public class TokenProvider {
     return claims.getExpiration().before(new Date());
   }
 
+
   private Claims parseClaims(String token) {
     try{
-
-      return Jwts.parser().verifyWith((SecretKey) key).build().parseSignedClaims(token).getPayload();
-
+      return Jwts.parser().setSigningKey(this.secretKey).parseClaimsJws(token).getBody();
     }catch (ExpiredJwtException e){
       return e.getClaims();
     }
   }
-
 }

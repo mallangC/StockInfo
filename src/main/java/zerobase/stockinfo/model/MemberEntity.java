@@ -1,12 +1,11 @@
 package zerobase.stockinfo.model;
 
-
-import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.List;
 
@@ -26,6 +25,7 @@ public class MemberEntity implements UserDetails {
 
   private String password;
 
+  @ElementCollection
   private List<String> roles;
 
   @Override
@@ -37,21 +37,21 @@ public class MemberEntity implements UserDetails {
 
   @Override
   public boolean isAccountNonExpired() {
-    return UserDetails.super.isAccountNonExpired();
+    return false;
   }
 
   @Override
   public boolean isAccountNonLocked() {
-    return UserDetails.super.isAccountNonLocked();
+    return false;
   }
 
   @Override
   public boolean isCredentialsNonExpired() {
-    return UserDetails.super.isCredentialsNonExpired();
+    return false;
   }
 
   @Override
   public boolean isEnabled() {
-    return UserDetails.super.isEnabled();
+    return false;
   }
 }

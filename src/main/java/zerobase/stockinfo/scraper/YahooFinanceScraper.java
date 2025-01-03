@@ -36,8 +36,6 @@ public class YahooFinanceScraper implements Scraper {
       Connection connection = Jsoup.connect(url);
       Document document = connection.get();
 
-      //id 와 value가 있을 때는 아래 코드로
-//      Elements parsingDivs = document.getElementsByAttributeValue("data-testid", "history-table");
       Elements parsingDivs = document.getElementsByClass("table yf-j5d1ld noDl");
       Element tableEle = parsingDivs.first(); // get(0)도 가능
       Element tbody = tableEle.children().get(1);
